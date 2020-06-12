@@ -51,11 +51,18 @@ do
             read -p "Name:" containerName
             clear
             if [[ ${containerName} ]]; then
-                echo "容器名稱:"
+                echo "容器名稱 :"
                 echo "${containerName}"
                 echo ""
-                docker inspect --format '已綁定端口列表：{{println}}{{range $p,$conf := .NetworkSettings.Ports}}{{$p}} -> {{(index $conf 0).HostPort}}{{println}}{{end}}' ${containerName}
-                docker inspect --format '內部IP：{{println}}{{range $p,$conf := .NetworkSettings.Networks}}{{$p}} -> {{.IPAddress}}{{println}}{{end}}' ${containerName}
+                docker inspect --format 'Container Id :{{println}}{{.Id}}{{println}}' ${containerName}
+                docker inspect --format '狀態 :{{println}}{{.State.Status}}{{println}}' ${containerName}
+                docker inspect --format 'Image :{{println}}{{.Config.Image}}{{println}}' ${containerName}
+                docker inspect --format 'Os Platgorm :{{println}}{{.Platform}}{{println}}' ${containerName}
+                docker inspect --format '已綁定Port :{{println}}{{range $p,$conf := .NetworkSettings.Ports}}{{$p}} -> {{(index $conf 0).HostPort}}{{println}}{{end}}' ${containerName}
+                docker inspect --format '內部IP :{{println}}{{range $p,$conf := .NetworkSettings.Networks}}{{$p}} -> {{.IPAddress}}{{println}}{{end}}' ${containerName}
+                docker inspect --format 'Mounts :{{println}}{{range $p,$conf := .Mounts}}{{(index $conf).Type}}: (local){{(index $conf).Source}} -> {{(index $conf).Destination}}{{println}}{{end}}' ${containerName}
+
+
             fi
             ;;
         i)
