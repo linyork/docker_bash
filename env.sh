@@ -18,7 +18,7 @@ do
     echo -e "r.\t\t重開所有 container"
     echo -e "l.\t\t顯示所有 container"
     echo -e "c.\t\t關閉所有 container"
-    echo -e "n.\t\t查看所有 container 網路"
+    echo -e "y.\t\t查看 container 詳細資訊"
     echo -e "i.\t\t進入 container"
     echo -e "q.\t\t跳出"
     echo -e "\033[32m----------------------------------------\033[0m"
@@ -44,9 +44,19 @@ do
             # 關閉 container
             docker rm -f $(docker ps -a -q) | awk '{print "移除 \""$1"\" Container"}'
             ;;
-        n)
-            # 查看所有 container 的網路狀況
-            docker ps -q | xargs docker inspect --format="容器名稱{{.Name}}......{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}"
+        y)
+            # 查看 container 詳細資訊
+            docker ps -a --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}\t{{.ID}}"
+            echo "請輸入 container name"
+            read -p "Name:" containerName
+            clear
+            if [[ ${containerName} ]]; then
+                echo "容器名稱:"
+                echo "${containerName}"
+                echo ""
+                docker inspect --format '已綁定端口列表：{{println}}{{range $p,$conf := .NetworkSettings.Ports}}{{$p}} -> {{(index $conf 0).HostPort}}{{println}}{{end}}' ${containerName}
+                docker inspect --format '內部IP：{{println}}{{range $p,$conf := .NetworkSettings.Networks}}{{$p}} -> {{.IPAddress}}{{println}}{{end}}' ${containerName}
+            fi
             ;;
         i)
             # 進入 container
